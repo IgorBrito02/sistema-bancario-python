@@ -58,3 +58,6 @@ Projeto criado como parte da formação em Python da Digital Innovation One (DIO
 📝 Licença
 Este projeto está sob a licença MIT.
 Sinta-se à vontade para usar, modificar e compartilhar!
+
+# sistema-bancario-python
+Sistema bancário simples desenvolvido em Python como desafio da DIO.
