@@ -1,122 +1,183 @@
-# Função para validar senha
-def autenticar(senha_digitada, senha_correta):
-    return senha_digitada == senha_correta
+import textwrap
 
 
-# Função para depósito
-def depositar(saldo, valor, extrato):
+def criar_usuario(usuarios):
+    cpf = input("Informe o CPF (somente números): ")
+    if any(usuario["cpf"] == cpf for usuario in usuarios):
+        print("@@@ Já existe usuário com esse CPF! @@@")
+        return
+
+    nome = input("Informe o nome completo: ")
+    data_nascimento = input("Informe a data de nascimento (dd-mm-aaaa): ")
+    endereco = input("Informe o endereço (logradouro, nro - bairro - cidade/sigla estado): ")
+
+    usuarios.append({
+        "nome": nome,
+        "data_nascimento": data_nascimento,
+        "cpf": cpf,
+        "endereco": endereco
+    })
+    print("=== Usuário criado com sucesso! ===")
+
+
+def buscar_usuario_por_cpf(cpf, usuarios):
+    for usuario in usuarios:
+        if usuario["cpf"] == cpf:
+            return usuario
+    return None
+
+
+def criar_conta(agencia, numero_conta, usuarios, contas):
+    cpf = input("Informe o CPF do titular: ")
+    usuario = buscar_usuario_por_cpf(cpf, usuarios)
+
+    if not usuario:
+        print("@@@ Usuário não encontrado! Crie um usuário primeiro. @@@")
+        return
+
+    conta = {
+        "agencia": agencia,
+        "numero": numero_conta,
+        "usuario": usuario,
+        "saldo": 0,
+        "extrato": [],
+        "numero_saques": 0
+    }
+
+    contas.append(conta)
+    print("=== Conta criada com sucesso! ===")
+
+
+def listar_contas(contas):
+    if not contas:
+        print("Nenhuma conta cadastrada.")
+        return
+
+    for conta in contas:
+        linha = f"""
+        Agência:\t{conta['agencia']}
+        C/C:\t\t{conta['numero']}
+        Titular:\t{conta['usuario']['nome']}
+        """
+        print("=" * 50)
+        print(textwrap.dedent(linha))
+
+
+def selecionar_conta(contas):
+    if not contas:
+        print("Nenhuma conta disponível.")
+        return None
+
+    numero = int(input("Número da conta: "))
+    agencia = input("Agência: ")
+
+    for conta in contas:
+        if conta["numero"] == numero and conta["agencia"] == agencia:
+            return conta
+
+    print("Conta não encontrada.")
+    return None
+
+
+def depositar(conta, /):
+    valor = float(input("Informe o valor do depósito: "))
+
     if valor > 0:
-        saldo += valor
-        extrato.append(f"Depósito: R$ {valor:.2f}")
-        print("Depósito realizado com sucesso!")
+        conta["saldo"] += valor
+        conta["extrato"].append(f"Depósito: R$ {valor:.2f}")
+        print("=== Depósito realizado com sucesso! ===")
     else:
-        print("Operação falhou! O valor informado é inválido.")
-    return saldo, extrato
+        print("@@@ Operação falhou! Valor inválido. @@@")
 
 
-# Função para saque
-def sacar(saldo, valor, extrato, limite, numero_saques, limite_saques):
-    excedeu_saldo = valor > saldo
+def sacar(*, conta, limite, limite_saques):
+    valor = float(input("Informe o valor do saque: "))
+    excedeu_saldo = valor > conta["saldo"]
     excedeu_limite = valor > limite
-    excedeu_saques = numero_saques >= limite_saques
+    excedeu_saques = conta["numero_saques"] >= limite_saques
 
     if excedeu_saldo:
-        print("Operação falhou! Você não tem saldo suficiente.")
+        print("@@@ Operação falhou! Saldo insuficiente. @@@")
     elif excedeu_limite:
-        print("Operação falhou! O valor do saque excede o limite.")
+        print("@@@ Operação falhou! Valor excede o limite. @@@")
     elif excedeu_saques:
-        print("Operação falhou! Número máximo de saques excedido.")
+        print("@@@ Operação falhou! Limite de saques excedido. @@@")
     elif valor > 0:
-        saldo -= valor
-        extrato.append(f"Saque: R$ {valor:.2f}")
-        numero_saques += 1
-        print("Saque realizado com sucesso!")
+        conta["saldo"] -= valor
+        conta["extrato"].append(f"Saque: R$ {valor:.2f}")
+        conta["numero_saques"] += 1
+        print("=== Saque realizado com sucesso! ===")
     else:
-        print("Operação falhou! O valor informado é inválido.")
-    return saldo, extrato, numero_saques
+        print("@@@ Operação falhou! Valor inválido. @@@")
 
 
-# Função para exibir extrato
-def exibir_extrato(saldo, extrato):
+def exibir_extrato(conta, /):
     print("\n================ EXTRATO ================")
-    if not extrato:
+    if not conta["extrato"]:
         print("Não foram realizadas movimentações.")
     else:
-        for operacao in extrato:
+        for operacao in conta["extrato"]:
             print(operacao)
-    print(f"\nSaldo: R$ {saldo:.2f}")
+    print(f"\nSaldo: R$ {conta['saldo']:.2f}")
     print("==========================================")
 
 
-# Função para transferência entre contas (somente quem envia registra no extrato)
-def transferir(saldo_origem, saldo_destino, valor, extrato_origem):
-    if valor <= 0:
-        print("Operação falhou! O valor informado é inválido.")
-    elif valor > saldo_origem:
-        print("Operação falhou! Você não tem saldo suficiente.")
-    else:
-        saldo_origem -= valor
-        saldo_destino += valor
-        extrato_origem.append(f"Transferência realizada: R$ {valor:.2f}")
-        print("Transferência realizada com sucesso!")
-    return saldo_origem, saldo_destino, extrato_origem
-
-
-# Função principal
-def main():
-    saldo = 0
-    limite = 500
-    extrato = []
-    numero_saques = 0
-    LIMITE_SAQUES = 3
-    senha_correta = "1234"
-
-    saldo2 = 1000
-    extrato2 = []
-
-    menu = """
-    [d] Depositar
-    [s] Sacar
-    [t] Transferir
-    [e] Extrato
-    [q] Sair
+def menu():
+    opcoes = """
+    ================ MENU ================
+    [d]\tDepositar
+    [s]\tSacar
+    [e]\tExtrato
+    [nu]\tNovo usuário
+    [nc]\tNova conta
+    [lc]\tListar contas
+    [q]\tSair
     => """
+    return input(textwrap.dedent(opcoes))
 
-    print("Bem-vindo ao sistema bancário!")
-    senha_digitada = input("Digite sua senha para acessar: ")
 
-    if not autenticar(senha_digitada, senha_correta):
-        print("Senha incorreta! Encerrando...")
-        return
+def main():
+    AGENCIA = "0001"
+    LIMITE_SAQUES = 3
+    LIMITE_SAQUE_VALOR = 500
+
+    usuarios = []
+    contas = []
 
     while True:
-        opcao = input(menu)
+        opcao = menu()
 
         if opcao == "d":
-            valor = float(input("Informe o valor do depósito: "))
-            saldo, extrato = depositar(saldo, valor, extrato)
+            conta = selecionar_conta(contas)
+            if conta:
+                depositar(conta)
 
         elif opcao == "s":
-            valor = float(input("Informe o valor do saque: "))
-            saldo, extrato, numero_saques = sacar(
-                saldo, valor, extrato, limite, numero_saques, LIMITE_SAQUES
-            )
-
-        elif opcao == "t":
-            valor = float(input("Informe o valor da transferência: "))
-            saldo, saldo2, extrato = transferir(
-                saldo, saldo2, valor, extrato
-            )
+            conta = selecionar_conta(contas)
+            if conta:
+                sacar(conta=conta, limite=LIMITE_SAQUE_VALOR, limite_saques=LIMITE_SAQUES)
 
         elif opcao == "e":
-            exibir_extrato(saldo, extrato)
+            conta = selecionar_conta(contas)
+            if conta:
+                exibir_extrato(conta)
+
+        elif opcao == "nu":
+            criar_usuario(usuarios)
+
+        elif opcao == "nc":
+            numero_conta = len(contas) + 1
+            criar_conta(AGENCIA, numero_conta, usuarios, contas)
+
+        elif opcao == "lc":
+            listar_contas(contas)
 
         elif opcao == "q":
-            print("Obrigado por usar o sistema! Encerrando...")
+            print("Obrigado por usar o sistema bancário!")
             break
 
         else:
-            print("Operação inválida, por favor selecione novamente.")
+            print("Operação inválida. Tente novamente.")
 
 
 if __name__ == "__main__":
