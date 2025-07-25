@@ -1,43 +1,55 @@
-# 💰 Sistema Bancário em Python
+# 💰 Sistema Bancário em Python (com POO)
 
-Este projeto é um sistema bancário completo desenvolvido em Python, como parte do desafio proposto na Formação Python da DIO.  
-Aqui você pode simular um sistema com múltiplos usuários, várias contas por CPF, autenticação, e operações bancárias como depósitos, saques, transferências e extrato.
+Este projeto é um sistema bancário simples desenvolvido em Python, utilizando os princípios da **Programação Orientada a Objetos (POO)**.  
+Ele foi criado como parte do desafio da Formação Python da Digital Innovation One (DIO).
+
+A aplicação simula um sistema bancário básico, com funcionalidades de cadastro de clientes, criação de contas, depósitos, saques e emissão de extratos.
 
 ---
 
 ## 🚀 Funcionalidades
 
-- **👥 Cadastro de Usuários**
-  - Registre novos clientes informando nome, data de nascimento, CPF (único) e endereço.
+- **👥 Cadastro de Clientes**
+  - Nome completo, CPF (único), data de nascimento e endereço.
+  - Verificação de duplicidade de CPF.
 
-- **🏦 Criação de Contas Bancárias**
-  - Um cliente pode ter várias contas associadas ao seu CPF.
-  - Cada conta possui número, agência, e é vinculada a um usuário.
-
-- **🔐 Autenticação**
-  - O cliente deve informar CPF e senha para acessar suas contas.
+- **🏦 Criação de Contas Correntes**
+  - Vinculadas a um cliente já existente.
+  - Cada conta possui número, agência fixa (0001), saldo e histórico de transações.
 
 - **💵 Depósito**
-  - Permite adicionar valores positivos ao saldo da conta selecionada.
-  - Registra a operação no extrato da conta.
+  - Adiciona saldo à conta.
+  - Valor deve ser positivo.
+  - Registra a transação no histórico.
 
 - **🏧 Saque**
-  - Verifica saldo disponível antes da operação.
-  - Aplica limite de valor por saque (R$ 500) e número máximo de saques diários (3 por dia).
-  - Registra a operação no extrato.
-
-- **💸 Transferência**
-  - Permite transferir saldo entre contas existentes.
-  - Apenas o remetente registra a operação no extrato.
+  - Permite saque se o saldo for suficiente.
+  - Limite por saque: R$ 500,00.
+  - Máximo de 3 saques diários por conta.
+  - Transação registrada no histórico.
 
 - **📄 Extrato**
-  - Exibe todas as movimentações (depósitos, saques, transferências) e o saldo atual da conta.
+  - Lista todas as transações (saques e depósitos) da conta.
+  - Exibe saldo atual.
 
-- **🔁 Trocar Conta**
-  - Possibilidade de trocar entre contas associadas ao mesmo CPF.
+- **📋 Listar Contas**
+  - Mostra todas as contas criadas com seus dados principais.
 
 - **❌ Sair**
   - Encerra o programa com uma mensagem de agradecimento.
+
+---
+
+## 💡 Tecnologias e Conceitos Utilizados
+
+- Python 3
+- Programação Orientada a Objetos (POO)
+  - Encapsulamento
+  - Herança
+  - Polimorfismo
+  - Classes Abstratas
+- Listas e buscas com `next()` e `filter`
+- Estrutura de menus interativos com `input()` e `print()`
 
 ---
 
@@ -57,9 +69,9 @@ python sistema_bancario.py
 
 
 💡 Objetivos do projeto
-- Praticar lógica de programação e organização de sistemas com Python.
-- Simular um sistema bancário completo com operações reais.
-- Exercitar uso de listas, dicionários, autenticação e múltiplas entidades (usuário e conta).
+- Praticar a estruturação de código com POO.
+- Aplicar abstração e modularização para facilitar a manutenção.
+- Simular operações bancárias reais com lógica de negócio implementada.
 
 💙 Créditos
 Projeto criado como parte da formação em Python da Digital Innovation One (DIO).
